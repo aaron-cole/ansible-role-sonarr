@@ -1,0 +1,35 @@
+---
+# tasks file for sonarr
+
+# Better safe than sorry
+- name: Gather Package Facts
+  package_facts:
+    manager: auto
+
+# Install yum-utils if not already installed
+- name: Install yum-utils to start this off
+  yum:
+    name: yum-utils
+    state: present
+  when: "'yum-utils' not in ansible_facts['packages']"
+
+- name: User Group Creation tasks
+  include_tasks: "user_group_creation.yml"
+
+- name: Setup Required repositories
+  include_tasks: "repo_setups.yml"
+
+- name: Install packages
+  include_tasks: "install_packages.yml"
+
+- name: Sonarr Configuration
+  include_tasks: "app_configuration.yml"
+
+- name: fapolicyd tasks
+  include_tasks: "fapolicyd_configuration.yml"
+
+- name: firewall tasks
+  include_tasks: "firewall_configuration.yml"
+
+- name: Service Configuration Tasks
+  include_tasks: "service_configuration.yml"

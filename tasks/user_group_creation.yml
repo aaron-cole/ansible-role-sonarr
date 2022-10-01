@@ -1,0 +1,24 @@
+---
+# user group tasks for sonarr
+
+# User Group Creation
+- name: Create group for sonarr if defined
+  group:
+    name: "{{ sonarr_group }}"
+    gid: "{{ sonarr_group_gid | default(omit) }}"
+    state: present
+    system: yes
+  when: sonarr_group is defined
+
+# Create our user we will use
+- name: Create sonarr user
+  user:
+    name: "{{ sonarr_user }}"
+    state: present
+    shell: /sbin/nologin
+    group: "{{ sonarr_group }}"
+    system: yes
+    home: "{{ sonarr_base_install_dir }}/Sonarr"
+    comment: "sonarr service account"
+    uid: "{{ sonarr_uid | default(omit) }}"
+    create_home: no

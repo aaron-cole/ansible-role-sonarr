@@ -1,0 +1,40 @@
+---
+# tasks file for app configuration
+
+# Get sonarr
+- name: Download sonarr tarball
+  get_url:
+    url:  "{{ sonarr_download_url }}"
+    dest: /tmp
+  register: sonarr_tarball
+
+# Untar 
+- name: Extract sonarr tarball
+  unarchive:
+    src: "{{ sonarr_tarball['dest'] }}"
+    dest: "{{ sonarr_base_install_dir }}"
+    owner: "{{ sonarr_user }}"
+    group: "{{ sonarr_group }}"
+    remote_src: yes
+
+# File perms very important
+- name: Set File perms on Sonarr dir
+  file:
+    path: "{{ sonarr_base_install_dir }}/Sonarr"
+    owner: "{{ sonarr_user }}"
+    group: "{{ sonarr_group }}"
+    recurse: yes
+
+# Ensure data dir exists
+- name: Create data directory
+  file:
+    path: "{{ sonarr_config_dir }}"
+    owner: "{{ sonarr_user }}"
+    group: "{{ sonarr_group }}"
+    state: directory
+
+# Remove tarball from /tmp
+- name: Remove tarball from download
+  file:
+    path: "{{ sonarr_tarball['dest'] }}"
+    state: absent

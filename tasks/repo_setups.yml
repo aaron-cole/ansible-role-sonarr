@@ -1,0 +1,58 @@
+---
+# MONO REPO
+- name: Setup Mono repo
+  block:
+  - name: Add Mono RPM key
+    rpm_key:
+      state: present
+      key: "http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF"
+
+  - name: Get mono .repo file and put into place
+    get_url:
+      url: "https://download.mono-project.com/repo/centos{{ ansible_facts['distribution_major_version'] }}-stable.repo"
+      dest: /etc/yum.repos.d/mono-centos{{ ansible_facts['distribution_major_version'] }}-stable.repo
+      owner: root
+      group: root
+      mode: 0644
+
+# EPEL
+# Add EPEL GPG key
+# Add EPEL repo
+- name: For RHEL Servers
+  block:
+  - name: Add EPEL RPM key
+    rpm_key:
+      state: present
+      key: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-{{ ansible_facts['distribution_major_version'] }}"
+
+  - name: Add EPEL Repository
+    yum:
+      name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_facts['distribution_major_version'] }}.noarch.rpm"
+      state: present
+
+  - name: Enable Code Builder repo for RHEL8
+    rhsm_repository:
+      name: codeready-builder-for-rhel-8-x86_64-rpms
+      state: enabled
+
+  when: ansible_distribution == 'RedHat'
+
+# NON RHEL servers can just install this package
+- name: Non RHEL Servers do other things
+  block:
+  - name: Install native epel-release rpm  Non-RHEL Servers
+    yum:
+      name: epel-release
+      state: present
+
+  - name: check if CentOS PowerTools repo enabled
+    shell: /usr/bin/dnf -q repolist --enabled PowerTools && echo disabled || echo enabled
+    register: powertools
+    changed_when: false
+    failed_when: false
+
+  - name: enable CentOS PowerTools repository for epel
+    command: dnf config-manager --set-enabled PowerTools
+    when: powertools.stdout == "disabled"
+
+  when: ansible_distribution != 'RedHat'

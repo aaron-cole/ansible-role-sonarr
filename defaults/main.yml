@@ -1,0 +1,33 @@
+---
+# defaults file for sonarr
+
+sonarr_user: sonarr
+# sonarr_uid:
+sonarr_group: media
+# sonarr_group_gid:
+sonarr_base_install_dir: /opt
+sonarr_config_dir: /opt/data/sonarr
+sonarr_port: 8989
+sonarr_download_url: "https://services.sonarr.tv/v1/download/main/latest?version=3&os=linux"
+sonarr_packages:
+  - wget
+  - git
+  - par2cmdline
+  - p7zip
+  - unrar
+  - tar
+  - gcc
+  - python3-feedparser
+  - python3-configobj
+  - python3-dbus
+  - python3-devel
+  - python3-cheetah  
+  - libxslt-devel
+  - mediainfo 
+  - libzen 
+  - libmediainfo 
+  - curl 
+  - gettext 
+  - mono-core 
+  - mono-devel 
+  - sqlite.x86_64

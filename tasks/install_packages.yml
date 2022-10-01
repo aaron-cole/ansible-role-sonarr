@@ -1,0 +1,8 @@
+---
+# tasks file for package installation
+
+# Installs
+- name: Install packages required
+  yum:
+    name: "{{ sonarr_packages }}"
+    state: present
